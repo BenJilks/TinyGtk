@@ -1,5 +1,21 @@
 
 external "TinyGtk/TinyGtk.so"
 {
-    syscall test_func
+    
+    sysclass GtkWindow
+    {
+        syscall GtkWindow
+        syscall on_activate
+        syscall set_title
+        syscall set_default_size
+        syscall container_add
+        syscall run
+    }
+    
+    sysclass GtkButton
+    {
+        syscall GtkButton
+        syscall signal_connect
+    }
+    
 }

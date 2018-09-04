@@ -1,0 +1,22 @@
+include "TinyLib/TinyLib.tiny"
+include "TinyGtk/TinyGtk.tiny"
+
+func print_hewwo()
+    println("Hewwo!!!!!")
+
+func activate(window : GtkWindow)
+{
+    window.set_title("TinyScript GTK3 Window")
+    window.set_default_size(400, 400)
+    
+    button : GtkButton = GtkButton("Hewwo, GTK3!!!")
+    button.signal_connect("clicked", print_hewwo)
+    window.container_add(button)
+}
+
+func main()
+{
+    window : GtkWindow = GtkWindow()
+    window.on_activate(activate)
+    window.run()
+}
