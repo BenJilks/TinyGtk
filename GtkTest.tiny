@@ -2,16 +2,22 @@ include "TinyLib/TinyLib.tiny"
 include "TinyGtk/TinyGtk.tiny"
 
 func print_hewwo()
-    println("Hewwo!!!!!")
+    gtk_popup("Hewwo!!!!!")
 
 func activate(window : GtkWindow)
 {
-    window.set_title("TinyScript GTK3 Window")
+    window.set_title("TinyScript GTK+3 Window")
     window.set_default_size(400, 400)
-    
-    button : GtkButton = GtkButton("Hewwo, GTK3!!!")
-    button.signal_connect("clicked", print_hewwo)
-    window.container_add(button)
+   
+    list_box : GtkWidget = GtkListBox()
+    for msg in ["Howwo, GTK+3!!!", "Lots a buttons", "Wooo", "GtkListBox"]
+    {
+        button : GtkWidget = GtkButton(msg)
+        button.signal_connect("clicked", print_hewwo)
+        list_box.container_add(button)
+    }
+
+    window.container_add(list_box)
 }
 
 func main()
@@ -20,3 +26,4 @@ func main()
     window.on_activate(activate)
     window.run()
 }
+

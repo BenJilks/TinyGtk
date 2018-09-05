@@ -5,6 +5,18 @@
 static VM global_vm;
 static GtkApplication *app;
 
+Object gtk_popup(Object *args, int arg_size, VM vm)
+{
+    Object msg = args[0];
+    GtkWidget *dialog = gtk_message_dialog_new(NULL, 
+        GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, 
+	GTK_BUTTONS_CLOSE, msg.p->str);
+
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return (Object){vm.PrimType(INT), 0};
+}
+
 static void activate(GtkApplication* app, gpointer user_data)
 {
     GtkWidget *window;
@@ -16,6 +28,11 @@ static void activate(GtkApplication* app, gpointer user_data)
     
     global_vm.CallFunc(func, &attrs[0], 1);
     gtk_widget_show_all(window);
+}
+
+Object GtkWidget_GtkWidget(Object *args, int arg_size, VM vm)
+{
+    return (Object){vm.PrimType(INT), 0};
 }
 
 Object GtkButton_GtkButton(Object *args, int arg_size, VM vm)
@@ -33,6 +50,17 @@ Object GtkButton_GtkButton(Object *args, int arg_size, VM vm)
     return (Object){vm.PrimType(INT), 0};
 }
 
+Object GtkListBox_GtkListBox(Object *args, int arg_size, VM vm)
+{
+    Object *list_box_obj = args - 1;
+    GtkWidget *list_box = gtk_list_box_new();
+    
+    GtkWidget **attrs = (GtkWidget**)malloc(sizeof(GtkWidget*) * 1);
+    attrs[0] = list_box;
+    list_box_obj->p = vm.AllocPointer(attrs);
+    return (Object){vm.PrimType(INT), 0};
+}
+
 static void run_callback(GtkWidget *widget, gpointer user_data)
 {
     int callback_id = (int)user_data;
@@ -40,7 +68,7 @@ static void run_callback(GtkWidget *widget, gpointer user_data)
     global_vm.CallFunc(func, NULL, 0);
 }
 
-Object GtkButton_signal_connect(Object *args, int arg_size, VM vm)
+Object GtkWidget_signal_connect(Object *args, int arg_size, VM vm)
 {
     Object button_obj = *(args - 1);
     Object signal = args[0];
@@ -51,6 +79,22 @@ Object GtkButton_signal_connect(Object *args, int arg_size, VM vm)
     g_signal_connect(button, signal.p->str, G_CALLBACK(run_callback), callback_id);
     return (Object){vm.PrimType(INT), 0};
 }
+
+Object GtkWidget_container_add(Object *args, int arg_size, VM vm)
+{
+    Object container_obj = args[-1];
+    Object widget_obj = args[0];
+    GtkWidget *container = ((GtkWidget**)container_obj.p->v)[0];
+    GtkWidget *widget = ((GtkWidget**)widget_obj.p->v)[0];
+
+    gtk_container_add(GTK_CONTAINER(container), widget);
+    return (Object){vm.PrimType(INT), 0};
+}
+
+Object GtkButton_signal_connect(Object *a, int s, VM v) { return GtkWidget_signal_connect(a, s, v); }
+Object GtkButton_container_add(Object *a, int s, VM v) { return GtkWidget_container_add(a, s, v); }
+Object GtkListBox_signal_connect(Object *a, int s, VM v) { return GtkWidget_signal_connect(a, s, v); }
+Object GtkListBox_container_add(Object *a, int s, VM v) { return GtkWidget_container_add(a, s, v); }
 
 Object GtkWindow_GtkWindow(Object *args, int arg_size, VM vm)
 {

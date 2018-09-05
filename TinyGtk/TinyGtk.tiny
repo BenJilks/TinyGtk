@@ -1,6 +1,8 @@
 
 external "TinyGtk/TinyGtk.so"
 {
+
+    syscall gtk_popup
     
     sysclass GtkWindow
     {
@@ -12,10 +14,26 @@ external "TinyGtk/TinyGtk.so"
         syscall run
     }
     
+    sysclass GtkWidget
+    {
+        syscall GtkWidget
+        syscall signal_connect
+        syscall container_add
+    }
+
     sysclass GtkButton
     {
         syscall GtkButton
         syscall signal_connect
+        syscall container_add
+    }
+
+    sysclass GtkListBox
+    {
+        syscall GtkListBox
+        syscall signal_connect
+        syscall container_add
     }
     
 }
+
